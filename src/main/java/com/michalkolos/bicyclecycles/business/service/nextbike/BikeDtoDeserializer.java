@@ -2,9 +2,8 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.configuration;
+package com.michalkolos.bicyclecycles.business.service.nextbike;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,7 +18,7 @@ public class BikeDtoDeserializer extends StdDeserializer<BikeDto> {
 
 	private static final Logger log = LoggerFactory.getLogger(BikeDtoDeserializer.class);
 
-	protected BikeDtoDeserializer() {
+	public BikeDtoDeserializer() {
 		super(BikeDtoDeserializer.class);
 	}
 
@@ -36,7 +35,13 @@ public class BikeDtoDeserializer extends StdDeserializer<BikeDto> {
 			bikedto.setNumber(jsonNode.get("number").asLong());
 			bikedto.setBike_type(jsonNode.get("bike_type").asInt());
 			bikedto.setActive(jsonNode.get("active").asInt());
-			bikedto.setState(jsonNode.get("state").asText());
+
+			if(jsonNode.has("state")) {
+				bikedto.setState(jsonNode.get("state").asText());
+			} else {
+				bikedto.setState("UNDEFINED");
+			}
+
 			bikedto.setLock_types(jsonNode.get("lock_types").asText());
 
 			if(jsonNode.has("boardcomputer")) {
@@ -47,12 +52,14 @@ public class BikeDtoDeserializer extends StdDeserializer<BikeDto> {
 				bikedto.setElectric_lock(jsonNode.get("electric_lock").asInt(0));
 			}
 
-			if(jsonNode.has("pedelec_battery") ||
-					!jsonNode.get("pedelec_battery").asText().isBlank()) {
+			if(jsonNode.has("pedelec_battery")) {
+				String batteryString = jsonNode.get("pedelec_battery").asText();
 
-				bikedto.setElectric(true);
-				bikedto.setPedelec_battery(
-						jsonNode.get("pedelec_battery").asInt());
+				if(!(batteryString.isBlank() || batteryString.equals("\"\""))) {
+					bikedto.setElectric(true);
+					bikedto.setPedelec_battery(
+							jsonNode.get("pedelec_battery").asInt());
+				}
 			}
 
 		}catch (NullPointerException e){

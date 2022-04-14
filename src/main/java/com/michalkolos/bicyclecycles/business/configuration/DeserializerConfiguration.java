@@ -5,10 +5,17 @@
 package com.michalkolos.bicyclecycles.business.configuration;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.michalkolos.bicyclecycles.business.service.nextbike.BikeDtoDeserializer;
+import com.michalkolos.bicyclecycles.business.service.nextbike.CityBoundsDeserializer;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.BikeDto;
+import com.michalkolos.bicyclecycles.business.service.openweathermaps.OwmCityDeserializer;
+import com.michalkolos.bicyclecycles.business.service.openweathermaps.dto.OwmCityDto;
 import org.locationtech.jts.geom.Geometry;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,7 +24,8 @@ import org.springframework.context.annotation.Configuration;
 public class DeserializerConfiguration {
 
 	@Bean
-	XmlMapper getXmlMapper() {
+	@Qualifier("xmlMapper")
+	XmlMapper xmlMapper() {
 		JacksonXmlModule module = new JacksonXmlModule();
 		module.setDefaultUseWrapper(false);
 		module.addDeserializer(BikeDto.class, new BikeDtoDeserializer());
@@ -31,4 +39,17 @@ public class DeserializerConfiguration {
 
 		return xmlMapper;
 	}
+
+	@Bean
+	@Qualifier("objectMapper")
+	ObjectMapper objectMapper(){
+		SimpleModule module = new SimpleModule();
+		module.addDeserializer(OwmCityDto.class, new OwmCityDeserializer());
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(module);
+
+		return objectMapper;
+	}
+
 }

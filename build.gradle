@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'groovy'
 }
 
 group = 'com.michalkolos'
@@ -32,9 +33,10 @@ dependencies {
     implementation 'org.locationtech.jts:jts-core'
     implementation 'org.hibernate:hibernate-spatial'
     implementation 'net.postgis:postgis-jdbc:2021.1.0'
-
+    testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
+    testImplementation 'org.codehaus.groovy:groovy-all:3.0.10'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }

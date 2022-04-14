@@ -15,7 +15,7 @@ import java.util.Set;
 public class PlaceDto {
 
 	@JacksonXmlProperty(isAttribute = true)
-	private int uid;
+	private long uid;
 
 	@JacksonXmlProperty(isAttribute = true)
 	private double lat;

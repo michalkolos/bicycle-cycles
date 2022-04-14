@@ -5,23 +5,27 @@
 package com.michalkolos.bicyclecycles.business.entity;
 
 
+import com.michalkolos.bicyclecycles.business.service.nextbike.dto.PlaceDto;
 import lombok.*;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import javax.persistence.*;
+import java.util.Objects;
 
 
 @Entity
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 public class Place {
+
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", nullable = false)
+	@Column(name = "id", nullable = false, unique = true)
 	private Long id;
 
-	@Column(name = "uid", nullable = false)
+	@Column(name = "place_uid", nullable = false, unique = true)
 	private long uid;
 
 	@Column(name = "number", nullable = false)
@@ -30,13 +34,42 @@ public class Place {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "position")
+	@Column(name = "position", nullable = false)
 	private Point position;
 
 	@Column(name = "rack_no", nullable = false)
 	private int rackNo;
 
 	@ManyToOne
-	@JoinColumn(name = "city_id")
+	@JoinColumn(name = "city_id", nullable = false)
 	private City city;
+
+
+	public Place() {
+	}
+
+	public Place(long uid, long number, String name, Point position, int rackNo,
+	             City city) {
+
+		this.uid = uid;
+		this.number = number;
+		this.name = name;
+		this.position = position;
+		this.rackNo = rackNo;
+		this.city = city;
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Place place = (Place) o;
+		return uid == place.uid;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(uid);
+	}
 }

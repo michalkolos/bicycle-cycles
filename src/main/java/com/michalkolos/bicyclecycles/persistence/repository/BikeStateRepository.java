@@ -4,5 +4,10 @@
 
 package com.michalkolos.bicyclecycles.persistence.repository;
 
-public interface BikeStateRepository {
+import com.michalkolos.bicyclecycles.business.entity.BikeState;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BikeStateRepository extends JpaRepository<BikeState, Long> {
 }

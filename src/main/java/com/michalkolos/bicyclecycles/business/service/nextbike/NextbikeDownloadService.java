@@ -5,15 +5,8 @@
 package com.michalkolos.bicyclecycles.business.service.nextbike;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.michalkolos.bicyclecycles.business.service.nextbike.dto.MarkersDto;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Polygon;
+import com.michalkolos.bicyclecycles.business.service.nextbike.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +19,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
+
+
 @Service
 public class NextbikeDownloadService {
 
@@ -35,11 +30,16 @@ public class NextbikeDownloadService {
 	private final HttpRequest nextbikeApiRequest;
 
 
+
 	@Autowired
-	public NextbikeDownloadService(XmlMapper xmlMapper, HttpRequest nextbikeApiRequest) {
+	public NextbikeDownloadService(XmlMapper xmlMapper,
+	                               HttpRequest nextbikeApiRequest) {
+
 		this.xmlMapper = xmlMapper;
 		this.nextbikeApiRequest = nextbikeApiRequest;
 	}
+
+
 
 	public Optional<MarkersDto> getBikeData() {
 
@@ -86,6 +86,4 @@ public class NextbikeDownloadService {
 		}
 		return null;
 	}
-
-
 }

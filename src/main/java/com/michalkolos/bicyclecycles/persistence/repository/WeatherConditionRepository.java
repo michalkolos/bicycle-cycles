@@ -4,14 +4,14 @@
 
 package com.michalkolos.bicyclecycles.persistence.repository;
 
-import com.michalkolos.bicyclecycles.business.entity.Bike;
+import com.michalkolos.bicyclecycles.business.entity.Weather;
+import com.michalkolos.bicyclecycles.business.entity.WeatherCondition;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
-public interface BikeRepository extends JpaRepository<Bike, Long> {
-	Optional<Bike> findFirstByNumber(long number);
+public interface WeatherConditionRepository extends JpaRepository<WeatherCondition, Long> {
+	Optional<WeatherCondition> findByApiId(Long apiId);
 }

@@ -22,7 +22,7 @@ public class City {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@Column(name = "uid")
+	@Column(name = "city_uid", nullable = false, unique = true)
 	private long uid;
 
 	@Column(name = "country_name")
@@ -43,14 +43,16 @@ public class City {
 	@Column(name = "bounds",columnDefinition="Geometry")
 	private Geometry bounds;
 
+	@Column(name = "openweathermaps_id")
+	private Long owmId;
+
 
 
 	@OneToMany(fetch=FetchType.LAZY, mappedBy = "city",
 			cascade={CascadeType.ALL})
 	private List<CityStats> stats = new ArrayList<>();
 
-	@OneToMany(fetch=FetchType.LAZY, mappedBy = "city",
-			cascade={CascadeType.ALL})
+	@OneToMany(fetch=FetchType.LAZY, mappedBy = "city", cascade={CascadeType.ALL})
 	private Set<Place> places = new HashSet<>();
 
 
@@ -82,25 +84,24 @@ public class City {
 	}
 
 
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		City city = (City) o;
-		return id.equals(city.id);
+		return uid == city.uid;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(uid);
 	}
-
 
 	public void addStats(CityStats stat) {
 		stats.add(stat);
 		stat.setCity(this);
 	}
+
 
 	@Override
 	public String toString() {
@@ -113,6 +114,7 @@ public class City {
 				", name='" + name + '\'' +
 				", alias='" + alias + '\'' +
 				", bounds=" + bounds +
+				", owmId=" + owmId +
 				'}';
 	}
 }

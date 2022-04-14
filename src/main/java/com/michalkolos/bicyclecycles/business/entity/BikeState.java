@@ -24,7 +24,7 @@ public class BikeState {
 	@Column(name = "is_active", nullable = false)
 	private boolean isActive;
 
-	@Column(name = "state", nullable = false)
+	@Column(name = "state")
 	private String state;
 
 	@Column(name = "electric_lock", nullable = false)
@@ -33,11 +33,27 @@ public class BikeState {
 	@Column(name = "battery_level", nullable = false)
 	private int batteryLevel;
 
-	@ManyToOne
-	@JoinColumn(name = "bike_id")
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name = "place", nullable = false)
+	private Place place;
+
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name = "bike_id", nullable = false)
 	private Bike bike;
 
 	@ManyToOne
-	@JoinColumn(name = "snapshot_id")
+	@JoinColumn(name = "snapshot_id", nullable = false)
 	private Snapshot snapshot;
+
+
+	public BikeState() {
+	}
+
+	public BikeState(boolean isActive, String state, boolean isElectricLock, int batteryLevel, Place place) {
+		this.isActive = isActive;
+		this.state = state;
+		this.isElectricLock = isElectricLock;
+		this.batteryLevel = batteryLevel;
+		this.place = place;
+	}
 }

@@ -19,11 +19,11 @@ public class CityStats {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "snapshot_id")
 	private Snapshot snapshot;
 
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "city_id")
 	private City city;
 
