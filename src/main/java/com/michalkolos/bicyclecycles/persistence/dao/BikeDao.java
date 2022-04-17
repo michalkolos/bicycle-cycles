@@ -2,10 +2,14 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.dao;
+package com.michalkolos.bicyclecycles.persistence.dao;
 
-import com.michalkolos.bicyclecycles.business.entity.*;
+import com.michalkolos.bicyclecycles.entity.*;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.*;
+import com.michalkolos.bicyclecycles.entity.Bike;
+import com.michalkolos.bicyclecycles.entity.BikeState;
+import com.michalkolos.bicyclecycles.entity.Place;
+import com.michalkolos.bicyclecycles.entity.Snapshot;
 import com.michalkolos.bicyclecycles.persistence.repository.BikeRepository;
 import com.michalkolos.bicyclecycles.persistence.repository.BikeStateRepository;
 import org.springframework.beans.factory.annotation.Autowired;

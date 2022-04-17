@@ -4,8 +4,7 @@
 
 package com.michalkolos.bicyclecycles.persistence.repository;
 
-import com.michalkolos.bicyclecycles.business.entity.Weather;
-import com.michalkolos.bicyclecycles.business.entity.WeatherCondition;
+import com.michalkolos.bicyclecycles.entity.WeatherCondition;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

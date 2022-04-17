@@ -2,10 +2,10 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.dao;
+package com.michalkolos.bicyclecycles.persistence.dao;
 
-import com.michalkolos.bicyclecycles.business.entity.City;
-import com.michalkolos.bicyclecycles.business.entity.Place;
+import com.michalkolos.bicyclecycles.entity.City;
+import com.michalkolos.bicyclecycles.entity.Place;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.PlaceDto;
 import com.michalkolos.bicyclecycles.persistence.repository.PlaceRepository;
 import org.locationtech.jts.geom.*;

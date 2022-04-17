@@ -4,11 +4,12 @@
 
 package com.michalkolos.bicyclecycles.business.service.nextbike;
 
-import com.michalkolos.bicyclecycles.business.dao.BikeDao;
-import com.michalkolos.bicyclecycles.business.dao.CityDao;
-import com.michalkolos.bicyclecycles.business.dao.PlaceDao;
-import com.michalkolos.bicyclecycles.business.dao.SnapshotDao;
-import com.michalkolos.bicyclecycles.business.entity.*;
+import com.michalkolos.bicyclecycles.entity.*;
+import com.michalkolos.bicyclecycles.persistence.dao.BikeDao;
+import com.michalkolos.bicyclecycles.persistence.dao.CityDao;
+import com.michalkolos.bicyclecycles.persistence.dao.PlaceDao;
+import com.michalkolos.bicyclecycles.persistence.dao.SnapshotDao;
+import com.michalkolos.bicyclecycles.entity.*;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class NextbikeDataService {
 
 		Map<Long, Bike> bikeMap = bikeDao.getAll();
 		Map<Long, Place> placeMap = placeDao.getAll();
-		Map<Long, City> cityMap = cityDao.getAll();
+		Map<Long, City> cityMap = cityDao.getAllMap();
 
 		for(CountryDto countryDto : dto.getCountry()) {
 			for(CityDto cityDto : countryDto.getCity()) {
@@ -53,14 +54,6 @@ public class NextbikeDataService {
 				if(city == null) {
 					city = cityDao.create(cityDto, countryDto);
 				}
-
-				CityStats stats = new CityStats(
-						cityDto.getBooked_bikes(),
-						cityDto.getSet_point_bikes(),
-						cityDto.getAvailable_bikes());
-
-				snapshot.addCityStats(stats);
-				city.addStats(stats);
 
 				int bikeCounter = 0;
 				for(PlaceDto placeDto : cityDto.getPlace()) {
@@ -98,8 +91,6 @@ public class NextbikeDataService {
 
 			}
 		}
-
-		logger.info("Updated data for " + snapshot.getBikeStatesList().size() + " bikes.");
 		return snapshotDao.save(snapshot);
 	}
 

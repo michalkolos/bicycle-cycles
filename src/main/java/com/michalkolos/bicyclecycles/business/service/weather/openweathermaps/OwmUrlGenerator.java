@@ -2,7 +2,7 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.service.openweathermaps;
+package com.michalkolos.bicyclecycles.business.service.weather.openweathermaps;
 
 import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;

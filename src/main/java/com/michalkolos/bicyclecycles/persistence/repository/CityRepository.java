@@ -4,7 +4,7 @@
 
 package com.michalkolos.bicyclecycles.persistence.repository;
 
-import com.michalkolos.bicyclecycles.business.entity.City;
+import com.michalkolos.bicyclecycles.entity.City;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

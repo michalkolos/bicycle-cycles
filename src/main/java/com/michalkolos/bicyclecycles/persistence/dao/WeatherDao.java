@@ -2,13 +2,13 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.dao;
+package com.michalkolos.bicyclecycles.persistence.dao;
 
-import com.michalkolos.bicyclecycles.business.entity.City;
-import com.michalkolos.bicyclecycles.business.entity.Snapshot;
-import com.michalkolos.bicyclecycles.business.entity.Weather;
-import com.michalkolos.bicyclecycles.business.entity.WeatherCondition;
-import com.michalkolos.bicyclecycles.business.service.openweathermaps.dto.OwmCityDto;
+import com.michalkolos.bicyclecycles.entity.City;
+import com.michalkolos.bicyclecycles.entity.Snapshot;
+import com.michalkolos.bicyclecycles.entity.Weather;
+import com.michalkolos.bicyclecycles.entity.WeatherCondition;
+import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDto;
 import com.michalkolos.bicyclecycles.persistence.repository.WeatherConditionRepository;
 import com.michalkolos.bicyclecycles.persistence.repository.WeatherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,10 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class WeatherDao {
@@ -28,11 +28,13 @@ public class WeatherDao {
 	private final WeatherConditionRepository weatherConditionRepository;
 
 
+
 	@Autowired
 	public WeatherDao(WeatherRepository weatherRepository, WeatherConditionRepository weatherConditionRepository) {
 		this.weatherRepository = weatherRepository;
 		this.weatherConditionRepository = weatherConditionRepository;
 	}
+
 
 	@Transactional
 	public Weather create(OwmCityDto dto, City city, Snapshot snapshot) {
@@ -52,7 +54,6 @@ public class WeatherDao {
 		newWeather.setCondition(createWeatherCondition(dto.getCondition_id(), dto.getDescription()));
 
 		newWeather.setCity(city);
-		newWeather.setSnapshot(snapshot);
 
 		newWeather.setCalculatedTime(dto.getCalculatedTime());
 		newWeather.setSunrise(dto.getSunrise());

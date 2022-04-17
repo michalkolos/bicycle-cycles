@@ -2,14 +2,16 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.entity;
+package com.michalkolos.bicyclecycles.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 
 @Entity
@@ -69,9 +71,10 @@ public class Weather {
 	@JoinColumn(name = "city_id", nullable = false)
 	private City city;
 
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name = "snapshot_id", nullable = false)
-	private Snapshot snapshot;
+//	TODO: Remove legacy association (commented out)
+//	@ManyToOne(cascade=CascadeType.ALL)
+//	@JoinColumn(name = "snapshot_id", nullable = false)
+//	private Set<Snapshot> snapshots = new HashSet<>();
 
 
 	@Override

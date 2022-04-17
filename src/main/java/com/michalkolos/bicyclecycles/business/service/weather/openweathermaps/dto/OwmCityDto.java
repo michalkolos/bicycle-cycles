@@ -2,7 +2,7 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.service.openweathermaps.dto;
+package com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto;
 
 import lombok.Data;
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.entity;
+package com.michalkolos.bicyclecycles.entity;
 
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.CityDto;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.CountryDto;
@@ -46,11 +46,6 @@ public class City {
 	@Column(name = "openweathermaps_id")
 	private Long owmId;
 
-
-
-	@OneToMany(fetch=FetchType.LAZY, mappedBy = "city",
-			cascade={CascadeType.ALL})
-	private List<CityStats> stats = new ArrayList<>();
 
 	@OneToMany(fetch=FetchType.LAZY, mappedBy = "city", cascade={CascadeType.ALL})
 	private Set<Place> places = new HashSet<>();
@@ -96,12 +91,6 @@ public class City {
 	public int hashCode() {
 		return Objects.hash(uid);
 	}
-
-	public void addStats(CityStats stat) {
-		stats.add(stat);
-		stat.setCity(this);
-	}
-
 
 	@Override
 	public String toString() {

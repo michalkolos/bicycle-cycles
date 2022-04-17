@@ -4,12 +4,11 @@
 
 package com.michalkolos.bicyclecycles.persistence.repository;
 
-import com.michalkolos.bicyclecycles.business.entity.Bike;
+import com.michalkolos.bicyclecycles.entity.Bike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface BikeRepository extends JpaRepository<Bike, Long> {

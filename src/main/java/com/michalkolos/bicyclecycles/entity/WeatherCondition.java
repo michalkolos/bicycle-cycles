@@ -2,7 +2,7 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.entity;
+package com.michalkolos.bicyclecycles.entity;
 
 import javax.persistence.*;
 

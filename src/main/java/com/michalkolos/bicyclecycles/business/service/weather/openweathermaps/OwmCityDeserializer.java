@@ -2,14 +2,14 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.service.openweathermaps;
+package com.michalkolos.bicyclecycles.business.service.weather.openweathermaps;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.michalkolos.bicyclecycles.business.service.openweathermaps.dto.OwmCityDto;
+import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

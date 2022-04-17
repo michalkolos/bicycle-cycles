@@ -2,12 +2,10 @@
  * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
  */
 
-package com.michalkolos.bicyclecycles.business.entity;
+package com.michalkolos.bicyclecycles.entity;
 
 
-import com.michalkolos.bicyclecycles.business.service.nextbike.dto.PlaceDto;
 import lombok.*;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import javax.persistence.*;
 import java.util.Objects;
