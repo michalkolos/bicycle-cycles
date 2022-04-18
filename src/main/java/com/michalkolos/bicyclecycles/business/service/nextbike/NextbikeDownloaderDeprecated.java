@@ -10,7 +10,7 @@ import com.michalkolos.bicyclecycles.business.service.nextbike.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -21,10 +21,10 @@ import java.util.Optional;
 
 
 
-@Service
-public class NextbikeDownloadService {
+@Component
+public class NextbikeDownloaderDeprecated {
 
-	private static final Logger logger = LoggerFactory.getLogger(NextbikeDownloadService.class);
+	private static final Logger logger = LoggerFactory.getLogger(NextbikeDownloaderDeprecated.class);
 
 	private final XmlMapper xmlMapper;
 	private final HttpRequest nextbikeApiRequest;
@@ -32,8 +32,8 @@ public class NextbikeDownloadService {
 
 
 	@Autowired
-	public NextbikeDownloadService(XmlMapper xmlMapper,
-	                               HttpRequest nextbikeApiRequest) {
+	public NextbikeDownloaderDeprecated(XmlMapper xmlMapper,
+	                                    HttpRequest nextbikeApiRequest) {
 
 		this.xmlMapper = xmlMapper;
 		this.nextbikeApiRequest = nextbikeApiRequest;

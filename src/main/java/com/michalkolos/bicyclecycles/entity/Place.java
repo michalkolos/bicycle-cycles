@@ -8,7 +8,9 @@ package com.michalkolos.bicyclecycles.entity;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 
 @Entity
@@ -37,6 +39,9 @@ public class Place {
 
 	@Column(name = "rack_no", nullable = false)
 	private int rackNo;
+
+	@OneToMany(fetch=FetchType.LAZY, mappedBy = "place", cascade={CascadeType.ALL})
+	private Set<BikeState> bikeStates = new HashSet<>();
 
 	@ManyToOne
 	@JoinColumn(name = "city_id", nullable = false)

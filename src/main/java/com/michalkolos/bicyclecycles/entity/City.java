@@ -78,6 +78,12 @@ public class City {
 		this.bounds = cityDto.getBounds();
 	}
 
+	public Place addPlace(Place place) {
+		places.add(place);
+		place.setCity(this);
+
+		return place;
+	}
 
 	@Override
 	public boolean equals(Object o) {
