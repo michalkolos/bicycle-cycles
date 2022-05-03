@@ -5,11 +5,9 @@
 package com.michalkolos.bicyclecycles.business;
 
 import com.michalkolos.bicyclecycles.business.service.nextbike.NextbikeService;
-import com.michalkolos.bicyclecycles.persistence.dao.SnapshotDao;
-import com.michalkolos.bicyclecycles.entity.Snapshot;
-import com.michalkolos.bicyclecycles.business.service.nextbike.NextbikeDataService;
-import com.michalkolos.bicyclecycles.business.service.nextbike.NextbikeDownloaderDeprecated;
+import com.michalkolos.bicyclecycles.entity.Sample;
 import com.michalkolos.bicyclecycles.business.service.weather.WeatherService;
+import com.michalkolos.bicyclecycles.persistence.dao.SampleDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +23,14 @@ public class Runner implements CommandLineRunner {
 
 	private final NextbikeService nextbikeService;
 	private final WeatherService weatherService;
+	private final SampleDao sampleDao;
 
 
 	@Autowired
-	public Runner(NextbikeService nextbikeService, WeatherService weatherService) {
+	public Runner(NextbikeService nextbikeService, WeatherService weatherService, SampleDao sampleDao) {
 		this.nextbikeService = nextbikeService;
 		this.weatherService = weatherService;
+		this.sampleDao = sampleDao;
 	}
 
 	@Override
@@ -39,8 +39,10 @@ public class Runner implements CommandLineRunner {
 
 //		Optional<Snapshot> snapshot = nextbikeDownloadService.getBikeData().map(nextbikeDataService::ingest);
 
-		nextbikeService.downloadCurrent(new Snapshot());
-//		weatherService.downloadCurrent(new Snapshot());
+		Sample sample = sampleDao.create();
+
+		sample = nextbikeService.downloadCurrent(sample);
+//		weatherService.downloadCurrent(sample);
 
 		logger.info("Finished ingesting data.");
 	}

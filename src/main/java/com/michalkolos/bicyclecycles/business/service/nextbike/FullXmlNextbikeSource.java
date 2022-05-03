@@ -12,7 +12,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -37,12 +40,11 @@ public class FullXmlNextbikeSource implements NextbikeSource{
 		this.nextbikeDtoToEntityConverter = nextbikeDtoToEntityConverter;
 	}
 
-	public Set<BikeState> get() {
+	public Optional<Set<BikeState>> get() {
 
 		return downloaderService.fromUrl(NEXTBIKE_API_URI)
 				.map(this::unmarshal)
-				.map(this::convertToEntities)
-				.orElse(new HashSet<>());
+				.map(this::convertToEntities);
 	}
 
 	private MarkersDto unmarshal(String response) {
@@ -67,11 +69,12 @@ public class FullXmlNextbikeSource implements NextbikeSource{
 					Place place = nextbikeDtoToEntityConverter.buildPlace(placeDto, city);
 
 					placeDto.getBike().forEach(bikeDto -> {
-						Bike bike = nextbikeDtoToEntityConverter.buildBike(bikeDto);
-						BikeState bikeState = nextbikeDtoToEntityConverter
-								.buildBikeState(bikeDto, bike, place);
+						nextbikeDtoToEntityConverter.buildBike(bikeDto).ifPresent(bike -> {
+							BikeState bikeState = nextbikeDtoToEntityConverter
+									.buildBikeState(bikeDto, bike, place);
 
-						bikeStates.add(bikeState);
+							bikeStates.add(bikeState);
+						});
 					});
 				});
 			});

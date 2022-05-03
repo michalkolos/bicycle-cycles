@@ -14,6 +14,8 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class NextbikeDtoToEntityConverter {
 
@@ -24,16 +26,16 @@ public class NextbikeDtoToEntityConverter {
 		this.geometryFactory = geometryFactory;
 	}
 
-	public BikeState buildBikeStateFromScratch(CountryDto countryDto,
+	public Optional<BikeState> buildBikeStateFromScratch(CountryDto countryDto,
 	                                           CityDto cityDto,
 	                                           PlaceDto placeDto,
 	                                           BikeDto bikeDto) {
 
 		City city = buildCity(countryDto, cityDto);
 		Place place = buildPlace(placeDto, city);
-		Bike bike = buildBike(bikeDto);
+		Optional<Bike> bike = buildBike(bikeDto);
 
-		return buildBikeState(bikeDto, bike, place);
+		return bike.map(b -> buildBikeState(bikeDto, b, place) );
 	}
 
 	public City buildCity(CountryDto countryDto, CityDto cityDto) {
@@ -67,7 +69,7 @@ public class NextbikeDtoToEntityConverter {
 		return place;
 	}
 
-	public Bike buildBike(BikeDto bikeDto) {
+	public Optional<Bike> buildBike(BikeDto bikeDto) {
 		Bike bike = new Bike();
 
 		bike.setNumber(bikeDto.getNumber());
@@ -75,7 +77,7 @@ public class NextbikeDtoToEntityConverter {
 		bike.setLockTypes(bikeDto.getLock_types());
 		bike.setElectric(bikeDto.isElectric());
 
-		return bike;
+		return Optional.ofNullable(bike.getNumber() == 0 ? null : bike);
 	}
 
 	public BikeState buildBikeState(BikeDto bikeDto, Bike bike, Place place) {

@@ -6,10 +6,10 @@ package com.michalkolos.bicyclecycles.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -71,10 +71,10 @@ public class Weather {
 	@JoinColumn(name = "city_id", nullable = false)
 	private City city;
 
-//	TODO: Remove legacy association (commented out)
-//	@ManyToOne(cascade=CascadeType.ALL)
-//	@JoinColumn(name = "snapshot_id", nullable = false)
-//	private Set<Snapshot> snapshots = new HashSet<>();
+
+	@ManyToMany(mappedBy = "weathers")
+	@ToString.Exclude
+	private Set<Sample> samples;
 
 
 	@Override

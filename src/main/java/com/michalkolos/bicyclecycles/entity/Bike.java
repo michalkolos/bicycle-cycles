@@ -6,6 +6,7 @@ package com.michalkolos.bicyclecycles.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@ToString
 public class Bike {
 
 	@Id
@@ -34,8 +36,8 @@ public class Bike {
 	@Column(name = "is_electric", nullable = false)
 	private boolean isElectric;
 
-	@OneToMany(fetch=FetchType.LAZY, mappedBy = "bike",
-			cascade={CascadeType.ALL})
+	@OneToMany(fetch=FetchType.LAZY, mappedBy = "bike")
+	@ToString.Exclude
 	private List<BikeState> states = new ArrayList<>();
 
 
@@ -54,17 +56,6 @@ public class Bike {
 		states.add(state);
 	}
 
-
-	@Override
-	public String toString() {
-		return "Bike{" +
-				"id=" + id +
-				", number=" + number +
-				", bikeType=" + bikeType +
-				", lockTypes='" + lockTypes + '\'' +
-				", isElectric=" + isElectric +
-				'}';
-	}
 
 	@Override
 	public boolean equals(Object o) {

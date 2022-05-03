@@ -4,11 +4,14 @@
 
 package com.michalkolos.bicyclecycles.entity;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -33,27 +36,45 @@ public class BikeState {
 	@Column(name = "battery_level", nullable = false)
 	private int batteryLevel;
 
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name = "place", nullable = false)
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "place_id", nullable = false)
 	private Place place;
 
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "bike_id", nullable = false)
 	private Bike bike;
 
-	@ManyToOne
-	@JoinColumn(name = "snapshot_id", nullable = false)
-	private Snapshot snapshot;
+//	@ManyToMany(mappedBy = "bikeStates")
+//	@ToString.Exclude
+//	private Set<Sample> samples;
 
 
 	public BikeState() {
 	}
 
-	public BikeState(boolean isActive, String state, boolean isElectricLock, int batteryLevel, Place place) {
+	public BikeState(boolean isActive, String state, boolean isElectricLock, int batteryLevel) {
 		this.isActive = isActive;
 		this.state = state;
 		this.isElectricLock = isElectricLock;
 		this.batteryLevel = batteryLevel;
-		this.place = place;
+	}
+
+	public boolean isSame(BikeState other) {
+		return this.getPlace().equals(other.getPlace())
+				&& this.getBike().equals(other.getBike())
+				&& Math.abs(this.getBatteryLevel() - other.getBatteryLevel()) <= 10;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		BikeState bikeState = (BikeState) o;
+		return isActive == bikeState.isActive && isElectricLock == bikeState.isElectricLock && place.equals(bikeState.place) && bike.equals(bikeState.bike);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(isActive, isElectricLock, place, bike);
 	}
 }

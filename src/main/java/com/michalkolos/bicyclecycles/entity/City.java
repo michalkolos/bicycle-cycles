@@ -7,6 +7,7 @@ package com.michalkolos.bicyclecycles.entity;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.CityDto;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.CountryDto;
 import lombok.*;
+import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
+@ToString
 public class City {
 
 	@Id
@@ -41,13 +43,16 @@ public class City {
 	private String alias;
 
 	@Column(name = "bounds",columnDefinition="Geometry")
+//	TODO: Investigate Hibernate type:
+//	@Type(type = "org.hibernate.spatial.JTSGeometryType")
 	private Geometry bounds;
 
 	@Column(name = "openweathermaps_id")
 	private Long owmId;
 
 
-	@OneToMany(fetch=FetchType.LAZY, mappedBy = "city", cascade={CascadeType.ALL})
+	@OneToMany(fetch=FetchType.LAZY, mappedBy = "city")
+	@ToString.Exclude
 	private Set<Place> places = new HashSet<>();
 
 
@@ -98,18 +103,4 @@ public class City {
 		return Objects.hash(uid);
 	}
 
-	@Override
-	public String toString() {
-		return "City{" +
-				"id=" + id +
-				", uid=" + uid +
-				", countryName='" + countryName + '\'' +
-				", orgName='" + orgName + '\'' +
-				", zoom=" + zoom +
-				", name='" + name + '\'' +
-				", alias='" + alias + '\'' +
-				", bounds=" + bounds +
-				", owmId=" + owmId +
-				'}';
-	}
 }

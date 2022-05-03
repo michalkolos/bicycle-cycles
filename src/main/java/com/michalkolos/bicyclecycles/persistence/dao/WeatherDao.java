@@ -5,7 +5,7 @@
 package com.michalkolos.bicyclecycles.persistence.dao;
 
 import com.michalkolos.bicyclecycles.entity.City;
-import com.michalkolos.bicyclecycles.entity.Snapshot;
+import com.michalkolos.bicyclecycles.entity.Sample;
 import com.michalkolos.bicyclecycles.entity.Weather;
 import com.michalkolos.bicyclecycles.entity.WeatherCondition;
 import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDto;
@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class WeatherDao {
@@ -37,7 +36,7 @@ public class WeatherDao {
 
 
 	@Transactional
-	public Weather create(OwmCityDto dto, City city, Snapshot snapshot) {
+	public Weather create(OwmCityDto dto, City city, Sample sample) {
 		Weather newWeather = new Weather();
 
 		newWeather.setClouds(dto.getClouds());
