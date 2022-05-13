@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
@@ -18,24 +19,70 @@ import static java.util.stream.Collectors.joining;
 @Log4j2
 public class DownloaderService {
 
-	public Optional<String> fromUrl(String urlString) {
-		String responseBody = null;
+	public Optional<String> fromUrl(String urlString, int retries) {
 
+		return Optional.ofNullable(buildClient())
+				.flatMap(client -> Optional.ofNullable(buildRequest(urlString))
+									.map(request -> sendWithRetries(request, client, retries)));
+	}
+
+	private HttpRequest buildRequest (String urlString) {
 		try {
-			HttpRequest request = HttpRequest.newBuilder()
+			return HttpRequest.newBuilder()
 					.uri(URI.create(urlString))
 					.GET()
 					.build();
 
-			HttpClient client = HttpClient.newBuilder().build();
-
-			responseBody = client.send(
-					request, HttpResponse.BodyHandlers.ofString()).body();
-
-		} catch (UncheckedIOException | IOException | InterruptedException e) {
-			log.warn("Error while sending request to: " + urlString + ", " + e);
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			log.error("Unable to create HTTP request for URL: \"{}\" ({})",
+					urlString, e.getMessage());
 		}
 
-		return Optional.ofNullable(responseBody);
+		return null;
+	}
+
+	private HttpClient buildClient() {
+		try {
+			return HttpClient.newBuilder().build();
+		} catch (UncheckedIOException e) {
+			log.error("Unable to create HTTP client ({})",
+					e.getMessage());
+		}
+
+		return null;
+	}
+
+	private String sendRequest(HttpRequest request, HttpClient client) {
+		try {
+			String response = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+
+			log.info("Host \"{}\" returned {}B of data",
+					request.uri().getHost(),
+					response.getBytes(StandardCharsets.UTF_8).length);
+
+			return response;
+		} catch (IOException | InterruptedException | IllegalArgumentException
+		         | SecurityException e) {
+
+			log.warn("Sending HTTP request to URL: \"{}\" failed ({})",
+					request.uri(), e.getMessage());
+		}
+
+		return null;
+	}
+
+	private String sendWithRetries(HttpRequest request, HttpClient client, int retries) {
+		String response = null;
+		int counter = 0;
+		while(response == null && counter < retries) {
+			log.info("Attempting to download data ({}/{}), from URL: {}",
+					++counter,
+					retries,
+					request.uri());
+
+			response = sendRequest(request, client);
+		}
+
+		return response;
 	}
 }

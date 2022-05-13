@@ -35,7 +35,7 @@ public abstract class AbstractDao<T, R extends JpaRepository<T, Long>> {
 	}
 
 	private void fillOutEntityMap() {
-		log.info("Generating in memory {} repository...", entityName);
+		log.info("Fetching previous {} entities from database...", entityName);
 		List<T> allEntities = getAll();
 		entityMap.clear();
 		allEntities.forEach(entity -> entityMap.put(entity.hashCode(),entity));

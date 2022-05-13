@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -74,7 +75,7 @@ public class Weather {
 
 	@ManyToMany(mappedBy = "weathers")
 	@ToString.Exclude
-	private Set<Sample> samples;
+	private Set<Sample> samples = new HashSet<>();
 
 
 	@Override

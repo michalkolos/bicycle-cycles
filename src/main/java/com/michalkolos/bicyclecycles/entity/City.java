@@ -7,7 +7,6 @@ package com.michalkolos.bicyclecycles.entity;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.CityDto;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.CountryDto;
 import lombok.*;
-import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.*;

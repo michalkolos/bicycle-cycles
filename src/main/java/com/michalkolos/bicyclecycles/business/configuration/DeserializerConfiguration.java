@@ -25,7 +25,7 @@ public class DeserializerConfiguration {
 
 	@Bean
 	@Qualifier("xmlMapper")
-	XmlMapper xmlMapper() {
+	public XmlMapper xmlMapper() {
 		JacksonXmlModule module = new JacksonXmlModule();
 		module.setDefaultUseWrapper(false);
 		module.addDeserializer(BikeDto.class, new BikeDtoDeserializer());
@@ -42,7 +42,7 @@ public class DeserializerConfiguration {
 
 	@Bean
 	@Qualifier("objectMapper")
-	ObjectMapper objectMapper(){
+	public ObjectMapper objectMapper(){
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(OwmCityDto.class, new OwmCityDeserializer());
 

@@ -24,6 +24,7 @@ public class FullXmlNextbikeSource implements NextbikeSource{
 
 	public static final String NEXTBIKE_API_URI =
 			"https://api.nextbike.net/maps/nextbike-official.xml";
+	private static final int RETRIES = 20;
 
 	private final DownloaderService downloaderService;
 	private final XmlMapper xmlMapper;
@@ -42,7 +43,7 @@ public class FullXmlNextbikeSource implements NextbikeSource{
 
 	public Optional<Set<BikeState>> get() {
 
-		return downloaderService.fromUrl(NEXTBIKE_API_URI)
+		return downloaderService.fromUrl(NEXTBIKE_API_URI, RETRIES)
 				.map(this::unmarshal)
 				.map(this::convertToEntities);
 	}

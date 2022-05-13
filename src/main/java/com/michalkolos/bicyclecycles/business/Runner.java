@@ -4,9 +4,9 @@
 
 package com.michalkolos.bicyclecycles.business;
 
-import com.michalkolos.bicyclecycles.business.service.nextbike.NextbikeService;
+import com.michalkolos.bicyclecycles.business.service.nextbike.NextbikeAcquisitionService;
+import com.michalkolos.bicyclecycles.business.service.weather.WeatherAcquisitionService;
 import com.michalkolos.bicyclecycles.entity.Sample;
-import com.michalkolos.bicyclecycles.business.service.weather.WeatherService;
 import com.michalkolos.bicyclecycles.persistence.dao.SampleDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +21,15 @@ public class Runner implements CommandLineRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(Runner.class);
 
-	private final NextbikeService nextbikeService;
-	private final WeatherService weatherService;
+	private final NextbikeAcquisitionService nextbikeService;
+	private final WeatherAcquisitionService weatherAcquisitionService;
 	private final SampleDao sampleDao;
 
 
 	@Autowired
-	public Runner(NextbikeService nextbikeService, WeatherService weatherService, SampleDao sampleDao) {
+	public Runner(NextbikeAcquisitionService nextbikeService, WeatherAcquisitionService weatherAcquisitionService, SampleDao sampleDao) {
 		this.nextbikeService = nextbikeService;
-		this.weatherService = weatherService;
+		this.weatherAcquisitionService = weatherAcquisitionService;
 		this.sampleDao = sampleDao;
 	}
 

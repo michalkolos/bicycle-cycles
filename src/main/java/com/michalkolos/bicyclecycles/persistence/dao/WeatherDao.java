@@ -4,36 +4,68 @@
 
 package com.michalkolos.bicyclecycles.persistence.dao;
 
-import com.michalkolos.bicyclecycles.entity.City;
-import com.michalkolos.bicyclecycles.entity.Sample;
-import com.michalkolos.bicyclecycles.entity.Weather;
-import com.michalkolos.bicyclecycles.entity.WeatherCondition;
+import com.michalkolos.bicyclecycles.entity.*;
 import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDto;
 import com.michalkolos.bicyclecycles.persistence.repository.WeatherConditionRepository;
 import com.michalkolos.bicyclecycles.persistence.repository.WeatherRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class WeatherDao {
 
 	private final WeatherRepository weatherRepository;
 	private final WeatherConditionRepository weatherConditionRepository;
 
+	private final CityDao cityDao;
+	private final SampleDao sampleDao;
 
 
 	@Autowired
-	public WeatherDao(WeatherRepository weatherRepository, WeatherConditionRepository weatherConditionRepository) {
+	public WeatherDao(WeatherRepository weatherRepository,
+	                  WeatherConditionRepository weatherConditionRepository,
+	                  CityDao cityDao,
+	                  SampleDao sampleDao) {
+
 		this.weatherRepository = weatherRepository;
 		this.weatherConditionRepository = weatherConditionRepository;
+		this.cityDao = cityDao;
+		this.sampleDao = sampleDao;
 	}
 
+	private Map<City, Weather> previousStates = new ConcurrentHashMap<>();
+
+
+	public Sample persistSample(Sample sample) {
+		log.info("Starting persisting new weather data...");
+
+		cityDao.initTransaction();
+
+	}
+
+	private void uploadPreviousState() {
+		log.info("Fetching previous BikeState entities from database...");
+		Set<BikeState> previous = sampleDao.getPrevious()
+				.map(Sample::getBikeStates)
+				.orElse(new HashSet<>());
+
+		previousStates = generateStateMap(previous);
+
+		log.info("Found {} most recent BikeState entities in database", previous.size());
+	}
+
+	private Map<City, Weather> generateStateMap(Set<BikeState> stateSet) {
+		return  stateSet.stream()
+				.collect(Collectors.toMap(BikeState::getBike, state -> state));
+	}
 
 	@Transactional
 	public Weather create(OwmCityDto dto, City city, Sample sample) {

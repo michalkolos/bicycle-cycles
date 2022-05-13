@@ -37,7 +37,7 @@ public class BikeState {
 	private int batteryLevel;
 
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "place_id", nullable = false)
+	@JoinColumn(name = "place_id")
 	private Place place;
 
 	@ManyToOne(cascade=CascadeType.ALL)

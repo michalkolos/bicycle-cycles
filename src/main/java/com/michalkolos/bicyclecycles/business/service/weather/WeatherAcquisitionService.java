@@ -21,8 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
-public class WeatherService {
-	private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
+public class WeatherAcquisitionService {
+	private static final Logger logger = LoggerFactory.getLogger(WeatherAcquisitionService.class);
 
 	private final CityDao cityDao;
 	private final WeatherDao weatherDao;
@@ -32,7 +32,7 @@ public class WeatherService {
 	ConcurrentHashMap<City, Instant> weatherTimeMap = new ConcurrentHashMap<>();
 
 	@Autowired
-	public WeatherService(CityDao cityDao, WeatherDao weatherDao, SampleDao sampleDao, WeatherSource weatherSource) {
+	public WeatherAcquisitionService(CityDao cityDao, WeatherDao weatherDao, SampleDao sampleDao, WeatherSource weatherSource) {
 		this.cityDao = cityDao;
 		this.weatherDao = weatherDao;
 		this.sampleDao = sampleDao;
@@ -41,7 +41,7 @@ public class WeatherService {
 
 	public void downloadCurrent(Sample sample) {
 		List<City> allCities = cityDao.getAll();
-		Set<Weather> currentWeathers = weatherSource.getGroupWeather(allCities);
+		Set<Weather> currentWeathers = weatherSource.get(allCities);
 		sample.addWeather(currentWeathers);
 		sampleDao.persistWeather(sample);
 	}
