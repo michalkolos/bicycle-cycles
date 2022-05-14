@@ -30,8 +30,8 @@ public class PlaceDao extends AbstractDao<Place, PlaceRepository>{
 	}
 
 	@Override
-	public Place sync(Place unsynced) {
-		unsynced.setCity(cityDao.sync(unsynced.getCity()));
-		return super.sync(unsynced);
+	public Place sync(Place notSynced) {
+		notSynced.setCity(cityDao.sync(notSynced.getCity()));
+		return super.sync(notSynced);
 	}
 }

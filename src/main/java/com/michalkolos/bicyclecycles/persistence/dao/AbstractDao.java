@@ -43,13 +43,13 @@ public abstract class AbstractDao<T, R extends JpaRepository<T, Long>> {
 	}
 
 	@Transactional
-	public T sync(T unsynced) {
-		return Optional.ofNullable(entityMap.get(unsynced.hashCode()))
+	public T sync(T notSynced) {
+		return Optional.ofNullable(entityMap.get(notSynced.hashCode()))
 				.orElseGet(() -> {
-//					T synced = repository.save(unsynced);
-					entityMap.put(unsynced.hashCode(), unsynced);
-					log.info("Received new {} entity: {}", entityName, unsynced);
-					return unsynced;
+//					T synced = repository.save(notSynced);
+					entityMap.put(notSynced.hashCode(), notSynced);
+					log.info("Received new {} entity: {}", entityName, notSynced);
+					return notSynced;
 				});
 	}
 

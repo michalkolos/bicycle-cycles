@@ -4,9 +4,12 @@
 
 package com.michalkolos.bicyclecycles.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
 @Entity
+@Data
 public class WeatherCondition {
 
 	@Id

@@ -25,46 +25,88 @@ public class WeatherDao {
 	private final WeatherRepository weatherRepository;
 	private final WeatherConditionRepository weatherConditionRepository;
 
+
 	private final CityDao cityDao;
 	private final SampleDao sampleDao;
+	private final WeatherConditionDao weatherConditionDao;
 
 
 	@Autowired
 	public WeatherDao(WeatherRepository weatherRepository,
 	                  WeatherConditionRepository weatherConditionRepository,
 	                  CityDao cityDao,
-	                  SampleDao sampleDao) {
+	                  SampleDao sampleDao,
+	                  WeatherConditionDao weatherConditionDao) {
 
 		this.weatherRepository = weatherRepository;
 		this.weatherConditionRepository = weatherConditionRepository;
 		this.cityDao = cityDao;
 		this.sampleDao = sampleDao;
+		this.weatherConditionDao = weatherConditionDao;
 	}
 
 	private Map<City, Weather> previousStates = new ConcurrentHashMap<>();
 
-
+	@Transactional
 	public Sample persistSample(Sample sample) {
 		log.info("Starting persisting new weather data...");
 
+		buildLocalEntityContext();
+
+		long totalPreviousStatesCount = previousStates.size();
+
+		Set<Weather> currentWeathers = sample.getWeathers().stream()
+				.map(unsynced ->
+						Optional.ofNullable(previousStates.remove(unsynced.getCity()))
+								.map(previous -> choseCurrentWeather(previous, unsynced))
+								.orElseGet(() -> setWeatherForSyncing(unsynced)))
+				.collect(Collectors.toSet());
+
+		long unchangedWeathersCount = currentWeathers.stream()
+				.filter(weather -> weather.getId() != null)
+				.count();
+		long totalCurrentWeathersCount = currentWeathers.size();
+
+		sample.setWeathers(currentWeathers);
+		sample = sampleDao.save(sample);
+
+		log.info("Persisted {} states: {} new, {} unchanged from previous. Delta vs previous sample: {}",
+				totalCurrentWeathersCount,
+				totalCurrentWeathersCount - unchangedWeathersCount,
+				unchangedWeathersCount,
+				totalCurrentWeathersCount - totalPreviousStatesCount);
+
+		return sample;
+	}
+
+	private void buildLocalEntityContext() {
+		previousStates = fetchPreviousWeathers();
 		cityDao.initTransaction();
-
+		weatherConditionDao.initTransaction();
 	}
 
-	private void uploadPreviousState() {
+	private Map<City, Weather> fetchPreviousWeathers() {
 		log.info("Fetching previous BikeState entities from database...");
-		Set<BikeState> previous = sampleDao.getPrevious()
-				.map(Sample::getBikeStates)
+		Set<Weather> previous = sampleDao.getPrevious()
+				.map(Sample::getWeathers)
 				.orElse(new HashSet<>());
-
-		previousStates = generateStateMap(previous);
-
 		log.info("Found {} most recent BikeState entities in database", previous.size());
+
+		return previous.stream()
+				.collect(Collectors.toMap(Weather::getCity, weather -> weather));
 	}
 
-	private Map<City, Weather> generateStateMap(Set<BikeState> stateSet) {
-		return  stateSet.stream()
-				.collect(Collectors.toMap(BikeState::getBike, state -> state));
+
+	private Weather choseCurrentWeather(Weather previous, Weather notSynced) {
+		return notSynced.equals(previous) ? previous :  setWeatherForSyncing(notSynced);
+	}
+
+	private Weather setWeatherForSyncing(Weather notSynced) {
+		notSynced.setCity(cityDao.sync(notSynced.getCity()));
+		notSynced.setCondition(weatherConditionDao.sync(notSynced.getCondition()));
+		previousStates.put(notSynced.getCity(), notSynced);
+
+		return notSynced;
 	}
 
 	@Transactional
