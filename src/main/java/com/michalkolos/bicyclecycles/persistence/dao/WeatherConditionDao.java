@@ -1,14 +1,16 @@
 package com.michalkolos.bicyclecycles.persistence.dao;
 
-import com.michalkolos.bicyclecycles.entity.WeatherCondition;
+import com.michalkolos.bicyclecycles.entity.OwmWeatherCondition;
 import com.michalkolos.bicyclecycles.persistence.repository.WeatherConditionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WeatherConditionDao extends
-		AbstractDao<WeatherCondition, WeatherConditionRepository>{
+		AbstractDao<OwmWeatherCondition, WeatherConditionRepository>{
 
-	public WeatherConditionDao(WeatherConditionRepository repository, String entityName) {
-		super(repository, entityName);
+	@Autowired
+	public WeatherConditionDao(WeatherConditionRepository repository) {
+		super(repository, "WeatherCondition");
 	}
 }

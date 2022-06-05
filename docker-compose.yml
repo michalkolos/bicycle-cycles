@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  bicycle-cycles-server:
+    image: michalkolos/bicycle-cycles-server
+    ports:
+      -  8280:8080
+    networks:
+      -  bicycle-cycles-network
+    volumes:
+      -  ./bicycle-cycles-logs/:/workspace/logs
+    restart: always
+
+volumes:
+  bicycle-cycles-server-data:
+    driver: local
+
+networks:
+  bicycle-cycles-network:
+    driver: bridge

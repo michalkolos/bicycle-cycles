@@ -14,6 +14,7 @@ public class OwmCityDto {
 	private long id;
 	private String name;
 	private long condition_id;
+	private String condition_name;
 	private String description;
 	private double temp;
 	private double human_temp;

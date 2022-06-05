@@ -5,17 +5,13 @@
 package com.michalkolos.bicyclecycles.persistence.dao;
 
 import com.michalkolos.bicyclecycles.entity.*;
-import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDto;
-import com.michalkolos.bicyclecycles.persistence.repository.WeatherConditionRepository;
 import com.michalkolos.bicyclecycles.persistence.repository.WeatherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,54 +19,45 @@ import java.util.stream.Collectors;
 public class WeatherDao {
 
 	private final WeatherRepository weatherRepository;
-	private final WeatherConditionRepository weatherConditionRepository;
-
-
 	private final CityDao cityDao;
-	private final SampleDao sampleDao;
 	private final WeatherConditionDao weatherConditionDao;
 
 
 	@Autowired
 	public WeatherDao(WeatherRepository weatherRepository,
-	                  WeatherConditionRepository weatherConditionRepository,
 	                  CityDao cityDao,
-	                  SampleDao sampleDao,
 	                  WeatherConditionDao weatherConditionDao) {
 
 		this.weatherRepository = weatherRepository;
-		this.weatherConditionRepository = weatherConditionRepository;
 		this.cityDao = cityDao;
-		this.sampleDao = sampleDao;
 		this.weatherConditionDao = weatherConditionDao;
 	}
 
-	private Map<City, Weather> previousStates = new ConcurrentHashMap<>();
-
 	@Transactional
-	public Sample persistSample(Sample sample) {
+	public Sample persistSample(Sample sample, Sample previousSample) {
 		log.info("Starting persisting new weather data...");
+		cityDao.initTransaction();
+		weatherConditionDao.initTransaction();
 
-		buildLocalEntityContext();
-
+		final Map<City, OwmWeather> previousStates = generateStateMap(previousSample.getOwmWeathers());
 		long totalPreviousStatesCount = previousStates.size();
+		log.info("Found {} most recent Weather entities in database", totalPreviousStatesCount);
 
-		Set<Weather> currentWeathers = sample.getWeathers().stream()
+		Set<OwmWeather> currentOwmWeathers = sample.getOwmWeathers().stream()
 				.map(unsynced ->
 						Optional.ofNullable(previousStates.remove(unsynced.getCity()))
-								.map(previous -> choseCurrentWeather(previous, unsynced))
-								.orElseGet(() -> setWeatherForSyncing(unsynced)))
+								.map(previous -> choseCurrentWeather(previous, unsynced, previousStates))
+								.orElseGet(() -> setWeatherForSyncing(unsynced, previousStates)))
 				.collect(Collectors.toSet());
 
-		long unchangedWeathersCount = currentWeathers.stream()
+		long unchangedWeathersCount = currentOwmWeathers.stream()
 				.filter(weather -> weather.getId() != null)
 				.count();
-		long totalCurrentWeathersCount = currentWeathers.size();
+		long totalCurrentWeathersCount = currentOwmWeathers.size();
 
-		sample.setWeathers(currentWeathers);
-		sample = sampleDao.save(sample);
+		sample.setOwmWeathers(currentOwmWeathers);
 
-		log.info("Persisted {} states: {} new, {} unchanged from previous. Delta vs previous sample: {}",
+		log.info("Persisted {} weather data: {} new, {} unchanged from previous. Delta vs previous sample: {}",
 				totalCurrentWeathersCount,
 				totalCurrentWeathersCount - unchangedWeathersCount,
 				unchangedWeathersCount,
@@ -79,88 +66,24 @@ public class WeatherDao {
 		return sample;
 	}
 
-	private void buildLocalEntityContext() {
-		previousStates = fetchPreviousWeathers();
-		cityDao.initTransaction();
-		weatherConditionDao.initTransaction();
-	}
-
-	private Map<City, Weather> fetchPreviousWeathers() {
-		log.info("Fetching previous BikeState entities from database...");
-		Set<Weather> previous = sampleDao.getPrevious()
-				.map(Sample::getWeathers)
-				.orElse(new HashSet<>());
-		log.info("Found {} most recent BikeState entities in database", previous.size());
-
-		return previous.stream()
-				.collect(Collectors.toMap(Weather::getCity, weather -> weather));
+	private Map<City, OwmWeather> generateStateMap(Set<OwmWeather> owmWeatherSet) {
+		return  owmWeatherSet.stream()
+				.collect(Collectors.toMap(OwmWeather::getCity, weather -> weather));
 	}
 
 
-	private Weather choseCurrentWeather(Weather previous, Weather notSynced) {
-		return notSynced.equals(previous) ? previous :  setWeatherForSyncing(notSynced);
+	private OwmWeather choseCurrentWeather(OwmWeather previous,
+	                                       OwmWeather notSynced,
+	                                       Map<City, OwmWeather> previousStates) {
+		return notSynced.equals(previous) ? previous :  setWeatherForSyncing(notSynced, previousStates);
 	}
 
-	private Weather setWeatherForSyncing(Weather notSynced) {
+	private OwmWeather setWeatherForSyncing(OwmWeather notSynced,
+	                                        Map<City, OwmWeather> previousStates) {
 		notSynced.setCity(cityDao.sync(notSynced.getCity()));
 		notSynced.setCondition(weatherConditionDao.sync(notSynced.getCondition()));
 		previousStates.put(notSynced.getCity(), notSynced);
 
 		return notSynced;
 	}
-
-	@Transactional
-	public Weather create(OwmCityDto dto, City city, Sample sample) {
-		Weather newWeather = new Weather();
-
-		newWeather.setClouds(dto.getClouds());
-		newWeather.setHumidity(dto.getHumidity());
-		newWeather.setHumanTemp(dto.getHuman_temp());
-		newWeather.setTemp(dto.getTemp());
-		newWeather.setPressure(dto.getPressure());
-		newWeather.setRain(dto.getRain());
-		newWeather.setSnow(dto.getSnow());
-		newWeather.setPressure(dto.getPressure());
-		newWeather.setWindDeg(dto.getWind_deg());
-		newWeather.setWindSpeed(dto.getWind_speed());
-
-		newWeather.setCondition(createWeatherCondition(dto.getCondition_id(), dto.getDescription()));
-
-		newWeather.setCity(city);
-
-		newWeather.setCalculatedTime(dto.getCalculatedTime());
-		newWeather.setSunrise(dto.getSunrise());
-		newWeather.setSunset(dto.getSunset());
-
-
-
-		return weatherRepository.save(newWeather);
-	}
-
-	@Transactional
-	public Map<City, Weather> getAllByCalculatedTime(Instant calculatedTime) {
-
-		Map<City, Weather> weathers = new HashMap<>();
-		weatherRepository.findAllByCalculatedTime(calculatedTime)
-				.forEach(weather -> weathers.put(weather.getCity(), weather));
-
-		return weathers;
-	}
-
-	@Transactional
-	public Optional<Weather> getLastWeatherForCity(City city) {
-		return weatherRepository.findFirstByCityOrderByCalculatedTimeDesc(city);
-	}
-
-	private WeatherCondition createWeatherCondition(Long apiId, String description) {
-		WeatherCondition weatherCondition = weatherConditionRepository.findByApiId(apiId)
-				.orElseGet(() -> {
-					WeatherCondition condition = new WeatherCondition(apiId, description);
-					return weatherConditionRepository.save(condition);
-				});
-
-		return weatherCondition;
-	}
-
-
 }

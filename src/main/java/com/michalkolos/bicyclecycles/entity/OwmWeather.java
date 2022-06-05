@@ -8,14 +8,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-public class Weather {
+public class OwmWeather {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -63,24 +61,20 @@ public class Weather {
 
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "condition_id", nullable = false)
-	private WeatherCondition condition;
+	private OwmWeatherCondition condition;
 
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "city_id", nullable = false)
 	private City city;
 
 
-	@ManyToMany(mappedBy = "weathers")
-	@ToString.Exclude
-	private Set<Sample> samples = new HashSet<>();
-
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		Weather weather = (Weather) o;
-		return calculatedTime.equals(weather.calculatedTime) && Objects.equals(city, weather.city);
+		OwmWeather owmWeather = (OwmWeather) o;
+		return calculatedTime.equals(owmWeather.calculatedTime) && Objects.equals(city, owmWeather.city);
 	}
 
 	@Override

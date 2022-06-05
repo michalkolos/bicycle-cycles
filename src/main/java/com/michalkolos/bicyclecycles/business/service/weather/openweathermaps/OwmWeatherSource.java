@@ -6,12 +6,11 @@ package com.michalkolos.bicyclecycles.business.service.weather.openweathermaps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.michalkolos.bicyclecycles.business.service.weather.WeatherSource;
 import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDto;
 import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDtoToWeatherConverter;
 import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmGroupCityDto;
 import com.michalkolos.bicyclecycles.entity.City;
-import com.michalkolos.bicyclecycles.entity.Weather;
+import com.michalkolos.bicyclecycles.entity.OwmWeather;
 import com.michalkolos.bicyclecycles.utils.DownloaderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,33 +19,38 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.*;
 
 @Component
 @Slf4j
-public class OwmWeatherSource extends OwmCommon implements WeatherSource {
+public class OwmWeatherSource extends OwmCommon implements com.michalkolos.bicyclecycles.business.service.weather.OwmWeatherSource {
 
 	public static final int GROUP_DOWNLOAD_COUNT = 20;
+
+
 
 	@Autowired
 	public OwmWeatherSource(ObjectMapper objectMapper, DownloaderService downloaderService) {
 		super(objectMapper, downloaderService);
+
 	}
 
 	@Override
-	public Set<Weather> get(Collection<City> cities) {
+	public Set<OwmWeather> get(Collection<City> cities) {
+
 		Set<City> viableCities = cities.stream()
-				.map(this::fetchOwmApiId)
+				.map(this::checkOwmApiId)
 				.filter(city -> city.getOwmId() != null)
-				.collect(Collectors.toSet());
+				.collect(toSet());
 
-		Set<Weather> weathers = packageCities(viableCities).stream()
+
+		Set<OwmWeather> owmWeathers = packageCities(viableCities).stream()
 				.flatMap(cityPackage -> downloadCityPackage(cityPackage).stream())
-				.collect(Collectors.toSet());
+				.collect(toSet());
 
-		log.info("Downloaded {} weather data out of {} cities.", weathers.size(), cities.size());
+		log.info("Downloaded {} weather data out of {} cities.", owmWeathers.size(), cities.size());
 
-		return weathers;
+		return owmWeathers;
 	}
 
 	private Set<Set<City>> packageCities(Collection<City> cities) {
@@ -68,7 +72,7 @@ public class OwmWeatherSource extends OwmCommon implements WeatherSource {
 		return cityPacks;
 	}
 
-	private Set<Weather> downloadCityPackage(Set<City> cities) {
+	private Set<OwmWeather> downloadCityPackage(Set<City> cities) {
 
 		return Optional.of(buildUrlStringFromCities(cities))
 				.flatMap(this::downloadData)
@@ -106,17 +110,21 @@ public class OwmWeatherSource extends OwmCommon implements WeatherSource {
 		return null;
 	}
 
-	private Set<Weather> convertGroupOfDtoToEntities(Set<OwmCityDto> dtos, Set<City> cities) {
-		Map<Long, City> cityMap = cities.stream()
-				.collect(Collectors.toMap(City::getOwmId, city -> city));
+	private Set<OwmWeather> convertGroupOfDtoToEntities(Set<OwmCityDto> dtos, Set<City> cities) {
+		Map<Long, Set<City>> cityMap = cities.stream()
+				.collect(groupingBy(City::getOwmId, toSet()));
 
 		return dtos.stream()
 				.flatMap(dto -> entityFromDtoInGroup(dto, cityMap).stream())
-				.collect(Collectors.toSet());
+				.collect(toSet());
 	}
 
-	private Optional<Weather> entityFromDtoInGroup(OwmCityDto dto, Map<Long, City> cityMap) {
-		return Optional.ofNullable(cityMap.get(dto.getId()))
-				.map(city -> OwmCityDtoToWeatherConverter.convert(dto, city));
+	private Set<OwmWeather> entityFromDtoInGroup(OwmCityDto dto, Map<Long, Set<City>> cityMap) {
+		Set<City> citySet = Optional.ofNullable(cityMap.get(dto.getId()))
+				.orElse(Collections.emptySet());
+
+		return citySet.stream()
+						.map(city -> OwmCityDtoToWeatherConverter.convert(dto, city))
+						.collect(Collectors.toSet());
 	}
 }

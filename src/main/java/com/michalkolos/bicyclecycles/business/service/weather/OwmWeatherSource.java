@@ -1,12 +1,12 @@
 package com.michalkolos.bicyclecycles.business.service.weather;
 
 import com.michalkolos.bicyclecycles.entity.City;
-import com.michalkolos.bicyclecycles.entity.Weather;
+import com.michalkolos.bicyclecycles.entity.OwmWeather;
 
 import java.util.Collection;
 import java.util.Set;
 
-public interface WeatherSource {
+public interface OwmWeatherSource {
 
-	Set<Weather> get(Collection<City> cities);
+	Set<OwmWeather> get(Collection<City> cities);
 }

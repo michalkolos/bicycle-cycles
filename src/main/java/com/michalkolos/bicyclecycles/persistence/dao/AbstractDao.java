@@ -53,5 +53,7 @@ public abstract class AbstractDao<T, R extends JpaRepository<T, Long>> {
 				});
 	}
 
-
+	public List<T> save() {
+		return repository.saveAll(entityMap.values());
+	}
 }

@@ -6,24 +6,31 @@ package com.michalkolos.bicyclecycles.persistence.dao;
 
 import com.michalkolos.bicyclecycles.entity.*;
 import com.michalkolos.bicyclecycles.persistence.repository.*;
-import com.michalkolos.bicyclecycles.utils.NextbikeIntegrityChecks;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
-@Log4j2
+@Slf4j
 public class SampleDao {
 
 	private final SampleRepository sampleRepository;
+	private final BikeStateDao bikeStateDao;
+	private final WeatherDao weatherDao;
 
 	@Autowired
-	public SampleDao(SampleRepository sampleRepository) {
+	public SampleDao(SampleRepository sampleRepository,
+	                 BikeStateDao bikeStateDao,
+	                 WeatherDao weatherDao) {
+
 		this.sampleRepository = sampleRepository;
+		this.bikeStateDao = bikeStateDao;
+		this.weatherDao = weatherDao;
 	}
 
 	public Sample create() {
@@ -39,8 +46,24 @@ public class SampleDao {
 		// TODO: Implement persisting weather data.
 	}
 
+	@Transactional
 	public Sample save(Sample sample) {
-		// TODO: Implement saving of samples to database.
+		log.info("Starting sample persisting...");
+		Sample previousSample = getPrevious().orElse(new Sample());
+
+		sample = bikeStateDao.persistSample(sample, previousSample);
+		sample = weatherDao.persistSample(sample, previousSample);
+
+		Duration creationDuration = Duration.between(sample.getTimestamp(), Instant.now());
+		sample.setCreationDuration(creationDuration);
+		sample = sampleRepository.save(sample);
+		log.info("Saved new sample to the database with id: {}. Operation running time: {}h {}m {}.{}s",
+				sample.getId(),
+				sample.getCreationDuration().toHoursPart(),
+				sample.getCreationDuration().toMinutesPart(),
+				sample.getCreationDuration().toSecondsPart(),
+				sample.getCreationDuration().toMillisPart());
+
 		return sample;
 	}
 }

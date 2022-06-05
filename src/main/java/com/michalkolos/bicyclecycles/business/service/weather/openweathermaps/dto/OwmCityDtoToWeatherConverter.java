@@ -1,36 +1,42 @@
 package com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto;
 
 import com.michalkolos.bicyclecycles.entity.City;
-import com.michalkolos.bicyclecycles.entity.Weather;
-import com.michalkolos.bicyclecycles.entity.WeatherCondition;
+import com.michalkolos.bicyclecycles.entity.OwmWeather;
+import com.michalkolos.bicyclecycles.entity.OwmWeatherCondition;
 
 public class OwmCityDtoToWeatherConverter {
-	public static Weather convert(OwmCityDto dto) {
-		Weather weather = new Weather();
+	public static OwmWeather convert(OwmCityDto dto) {
+		OwmWeather owmWeather = new OwmWeather();
 
-		weather.setClouds(dto.getClouds());
-		weather.setHumidity(dto.getHumidity());
-		weather.setHumanTemp(dto.getHuman_temp());
-		weather.setTemp(dto.getTemp());
-		weather.setPressure(dto.getPressure());
-		weather.setRain(dto.getRain());
-		weather.setSnow(dto.getSnow());
-		weather.setPressure(dto.getPressure());
-		weather.setWindDeg(dto.getWind_deg());
-		weather.setWindSpeed(dto.getWind_speed());
-		weather.setCalculatedTime(dto.getCalculatedTime());
-		weather.setSunrise(dto.getSunrise());
-		weather.setSunset(dto.getSunset());
+		//  TODO: Introduce builder
 
-		weather.setCondition(new WeatherCondition(dto.getCondition_id(), dto.getDescription()));
+		owmWeather.setClouds(dto.getClouds());
+		owmWeather.setHumidity(dto.getHumidity());
+		owmWeather.setHumanTemp(dto.getHuman_temp());
+		owmWeather.setTemp(dto.getTemp());
+		owmWeather.setPressure(dto.getPressure());
+		owmWeather.setRain(dto.getRain());
+		owmWeather.setSnow(dto.getSnow());
+		owmWeather.setPressure(dto.getPressure());
+		owmWeather.setWindDeg(dto.getWind_deg());
+		owmWeather.setWindSpeed(dto.getWind_speed());
+		owmWeather.setCalculatedTime(dto.getCalculatedTime());
+		owmWeather.setSunrise(dto.getSunrise());
+		owmWeather.setSunset(dto.getSunset());
+		owmWeather.setVisibility(dto.getVisibility());
 
-		return weather;
+		owmWeather.setCondition(new OwmWeatherCondition(
+				dto.getCondition_id(),
+				dto.getCondition_name(),
+				dto.getDescription()));
+
+		return owmWeather;
 	}
 
-	public static Weather convert(OwmCityDto dto, City city) {
-		Weather weather =convert (dto);
-		weather.setCity(city);
+	public static OwmWeather convert(OwmCityDto dto, City city) {
+		OwmWeather owmWeather =convert (dto);
+		owmWeather.setCity(city);
 
-		return weather;
+		return owmWeather;
 	}
 }

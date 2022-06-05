@@ -5,7 +5,7 @@
 package com.michalkolos.bicyclecycles.persistence.repository;
 
 import com.michalkolos.bicyclecycles.entity.City;
-import com.michalkolos.bicyclecycles.entity.Weather;
+import com.michalkolos.bicyclecycles.entity.OwmWeather;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,8 +14,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Repository
-public interface WeatherRepository extends JpaRepository<Weather, Long> {
-	Collection<Weather> findAllByCalculatedTime(Instant calculatedTime);
-	Optional<Weather> findByCalculatedTimeAndCity(Instant calculatedTime, City city);
-	Optional<Weather> findFirstByCityOrderByCalculatedTimeDesc(City city);
+public interface WeatherRepository extends JpaRepository<OwmWeather, Long> {
+	Collection<OwmWeather> findAllByCalculatedTime(Instant calculatedTime);
+	Optional<OwmWeather> findByCalculatedTimeAndCity(Instant calculatedTime, City city);
+	Optional<OwmWeather> findFirstByCityOrderByCalculatedTimeDesc(City city);
 }

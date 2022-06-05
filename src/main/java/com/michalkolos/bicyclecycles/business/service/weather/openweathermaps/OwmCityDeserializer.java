@@ -26,7 +26,7 @@ public class OwmCityDeserializer extends StdDeserializer<OwmCityDto> {
 	}
 
 	@Override
-	public OwmCityDto deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+	public OwmCityDto deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 
 		JsonNode jsonNode = ctxt.readTree(p);
 		OwmCityDto dto = new OwmCityDto();
@@ -38,6 +38,7 @@ public class OwmCityDeserializer extends StdDeserializer<OwmCityDto> {
 			dto.setClouds(jsonNode.get("clouds").get("all").asInt());
 			dto.setCondition_id(jsonNode.get("weather").get(0).get("id").asInt());
 			dto.setDescription(jsonNode.get("weather").get(0).get("description").asText());
+			dto.setCondition_name(jsonNode.get("weather").get(0).get("main").asText());
 			dto.setHuman_temp(jsonNode.get("main").get("feels_like").asDouble());
 			dto.setHumidity(jsonNode.get("main").get("humidity").asInt());
 			dto.setPressure(jsonNode.get("main").get("pressure").asInt());

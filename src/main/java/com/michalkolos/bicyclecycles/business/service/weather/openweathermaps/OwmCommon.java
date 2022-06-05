@@ -28,6 +28,8 @@ public abstract class OwmCommon {
 	public static final int DOWNLOAD_RETRIES = 20;
 	public static final int DELAY_SEC = 1;
 
+
+
 	private Instant operationTimer = Instant.now();
 
 	@Qualifier("objectMapper")
@@ -53,10 +55,27 @@ public abstract class OwmCommon {
 		operationTimer = Instant.now();
 	}
 
-	public City fetchOwmApiId(final City city) {
-		waitForApi();
+	public City checkOwmApiId(final City city) {
+
 		Optional.of(city)
-				.filter(c -> c.getOwmId() == null)
+				.map(City::getOwmId)
+				.filter(id -> id != 0)
+				.ifPresentOrElse(
+						id -> log.debug("City {} has OWM API ID: {}",
+								city.getName(),
+								city.getOwmId()),
+						() -> downloadOwmApiId(city)
+				);
+
+
+
+		return city;
+	}
+
+	public void downloadOwmApiId(final City city) {
+		waitForApi();
+
+		Optional.of(city)
 				.map(City::getBounds)
 				.map(Geometry::getCentroid)
 				.map(this::buildRequestUrl)
@@ -70,8 +89,6 @@ public abstract class OwmCommon {
 						},
 						() -> log.warn("Unable to get Openweather API ID for city {}({}).",
 								city.getName(), city.getAlias()));
-
-		return city;
 	}
 
 	private String buildRequestUrl(Point point) {

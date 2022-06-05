@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.extern.log4j.Log4j2;
 
 import javax.persistence.*;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -26,7 +27,8 @@ public class Sample implements Comparable<Sample>{
 	@Column(name = "timestamp", nullable = false)
 	private Instant timestamp;
 
-
+	@Column(name = "creation_duration")
+	private Duration creationDuration;
 
 	@ManyToMany(cascade = {CascadeType.ALL, CascadeType.ALL}, fetch = FetchType.EAGER)
 	@JoinTable(name = "sample_bike_states",
@@ -37,11 +39,11 @@ public class Sample implements Comparable<Sample>{
 
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "sample_weather",
+	@JoinTable(name = "sample_owm_weather",
 			joinColumns = {@JoinColumn(name = "sample_id", referencedColumnName = "id")},
 			inverseJoinColumns = {@JoinColumn(name = "weather_id", referencedColumnName = "id")})
 	@ToString.Exclude
-	private Set<Weather> weathers = new HashSet<>();
+	private Set<OwmWeather> owmWeathers = new HashSet<>();
 
 
 	public Sample() {
@@ -75,27 +77,20 @@ public class Sample implements Comparable<Sample>{
 //		}
 	}
 
-	public void addWeather(Weather weather) {
-		if(weather == null) {
+	public void addWeather(OwmWeather owmWeather) {
+		if(owmWeather == null) {
 			log.error("Unable to add Weather to snapshot: NPE!");
 			return;
 		}
-		if(weather.getCity() == null) {
+		if(owmWeather.getCity() == null) {
 			log.error("Unable to add Weather to snapshot: no city assigned to weather.");
 			return;
 		}
-		weathers.add(weather);
-		weather.getSamples().add(this);
+		owmWeathers.add(owmWeather);
 	}
 
-	public void addWeather(Collection<Weather> incomingWeathers) {
-		if(weathers == null) {
-			weathers = new HashSet<>(incomingWeathers);
-
-		} else {
-			weathers.addAll(incomingWeathers);
-		}
-
+	public void addWeather(Collection<OwmWeather> incomingOwmWeathers) {
+			owmWeathers.addAll(incomingOwmWeathers);
 	}
 
 	@Override
