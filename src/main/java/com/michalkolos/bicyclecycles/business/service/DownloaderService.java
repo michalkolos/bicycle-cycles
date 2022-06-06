@@ -1,4 +1,8 @@
-package com.michalkolos.bicyclecycles.utils;
+/*
+ * Copyright (c) 2022  Michal Kolosowski <michalkoloso@gmail.com>
+ */
+
+package com.michalkolos.bicyclecycles.business.service;
 
 
 import lombok.extern.log4j.Log4j2;
@@ -11,6 +15,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
@@ -18,6 +24,8 @@ import static java.util.stream.Collectors.joining;
 @Service
 @Log4j2
 public class DownloaderService {
+
+	private static final int CONNECTION_TIMEOUT_SECONDS = 60;
 
 	public Optional<String> fromUrl(String urlString, int retries) {
 
@@ -43,7 +51,9 @@ public class DownloaderService {
 
 	private HttpClient buildClient() {
 		try {
-			return HttpClient.newBuilder().build();
+			return HttpClient.newBuilder()
+					.connectTimeout(Duration.of(60, ChronoUnit.SECONDS))
+					.build();
 		} catch (UncheckedIOException e) {
 			log.error("Unable to create HTTP client ({})",
 					e.getMessage());

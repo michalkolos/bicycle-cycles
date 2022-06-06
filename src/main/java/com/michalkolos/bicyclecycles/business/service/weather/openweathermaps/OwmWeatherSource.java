@@ -11,7 +11,7 @@ import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dt
 import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmGroupCityDto;
 import com.michalkolos.bicyclecycles.entity.City;
 import com.michalkolos.bicyclecycles.entity.OwmWeather;
-import com.michalkolos.bicyclecycles.utils.DownloaderService;
+import com.michalkolos.bicyclecycles.business.service.DownloaderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

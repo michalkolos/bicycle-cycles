@@ -3,18 +3,6 @@
  */
 
 package com.michalkolos.bicyclecycles.business.service.weather.openweathermaps
-
-import com.michalkolos.bicyclecycles.entity.City
-import com.michalkolos.bicyclecycles.entity.OwmWeather
-import com.michalkolos.bicyclecycles.utils.DownloaderService
-import org.locationtech.jts.geom.Coordinate
-import org.locationtech.jts.geom.Envelope
-import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.geom.GeometryFactory
-import com.michalkolos.bicyclecycles.business.configuration.DeserializerConfiguration
-import spock.lang.Specification
-
-
 //class OwmOwmWeatherSourceSpec extends Specification {
 
 //  Class to be tested

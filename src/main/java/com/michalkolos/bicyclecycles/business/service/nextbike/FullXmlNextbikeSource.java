@@ -3,17 +3,14 @@ package com.michalkolos.bicyclecycles.business.service.nextbike;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.MarkersDto;
-import com.michalkolos.bicyclecycles.entity.Bike;
 import com.michalkolos.bicyclecycles.entity.BikeState;
 import com.michalkolos.bicyclecycles.entity.City;
 import com.michalkolos.bicyclecycles.entity.Place;
-import com.michalkolos.bicyclecycles.utils.DownloaderService;
+import com.michalkolos.bicyclecycles.business.service.DownloaderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;

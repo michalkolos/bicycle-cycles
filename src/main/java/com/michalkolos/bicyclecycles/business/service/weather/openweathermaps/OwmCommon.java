@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.michalkolos.bicyclecycles.entity.City;
 import com.michalkolos.bicyclecycles.business.service.weather.openweathermaps.dto.OwmCityDto;
-import com.michalkolos.bicyclecycles.utils.DownloaderService;
+import com.michalkolos.bicyclecycles.business.service.DownloaderService;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
