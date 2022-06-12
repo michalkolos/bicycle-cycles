@@ -52,7 +52,7 @@ public class DownloaderService {
 	private HttpClient buildClient() {
 		try {
 			return HttpClient.newBuilder()
-					.connectTimeout(Duration.of(60, ChronoUnit.SECONDS))
+					.connectTimeout(Duration.of(CONNECTION_TIMEOUT_SECONDS, ChronoUnit.SECONDS))
 					.build();
 		} catch (UncheckedIOException e) {
 			log.error("Unable to create HTTP client ({})",
@@ -85,10 +85,11 @@ public class DownloaderService {
 		String response = null;
 		int counter = 0;
 		while(response == null && counter < retries) {
-			log.info("Attempting to download data ({}/{}), from URL: {}",
+			log.info("Attempting to download data ({}/{}), from URL: {}, with timeout: {}",
 					++counter,
 					retries,
-					request.uri());
+					request.uri(),
+					client.connectTimeout().orElse(Duration.ZERO));
 
 			response = sendRequest(request, client);
 		}

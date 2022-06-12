@@ -15,12 +15,12 @@ echo 'ENTRYPOINT ["java","-jar","'/${PROJECT_NAME}'.jar", "--spring.profiles.act
 
 
 
-REMOTE_SCRIPT="export PATH=$REMOTE_PATH;java --version;echo $PATH;cd ${REMOTE_REPO_DIR}/${PROJECT_NAME};./gradlew build; docker build --build-arg JAR_FILE=build/libs/\*.jar -t ${DOCKER_IMAGE_NAME} .; docker-compose up -d"
+REMOTE_SCRIPT="export PATH=$REMOTE_PATH;java --version;echo $PATH;cd ${REMOTE_REPO_DIR}/${PROJECT_NAME};./gradlew build; docker build --build-arg JAR_FILE=build/libs/\*SNAPSHOT.jar -t ${DOCKER_IMAGE_NAME} .; docker-compose up -d"
 
 
 printf '%s\n' ${PROJECT_NAME}
 
-rsync -aP --delete . ${USERNAME}@${HOSTNAME}:${REMOTE_REPO_DIR}/${PROJECT_NAME}
-#ssh -l ${USERNAME} ${HOSTNAME} "${REMOTE_SCRIPT}"
+rsync -aP --delete . ${USERNAME}@${HOSTNAME}:${REMOTE_REPO_DIR}/"${PROJECT_NAME}"
+ssh -l ${USERNAME} ${HOSTNAME} "${REMOTE_SCRIPT}"
  
  
