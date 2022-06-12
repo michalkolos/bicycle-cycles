@@ -1,15 +1,70 @@
+CODE_CHANGES = getGitChanges()
+def gv  //  Global variable that will hold imported script
+
 pipeline {
   agent any
 
+  parameters {
+    string(name: 'VERSION', defaultValue: '', description: 'Version to deploy on prod')
+    choice(name: 'VERSION_CHOICE', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
+    booleanParam(name: 'executeTests', defaultValue: true, description: '')
+
+  }
+
+  tools {
+    //  Enable build tools, that are predefined in Jenkins configuration
+    gradle 'Gradle 7.4.2'
+  }
+
+  environment {
+    //  Define variables that will be available in all stages
+    NEW_VERSION = '1.0.0'
+    SERVER_CREDENTIALS = credentials('credentials-id')  //  Finds credentials defined in Jenkins
+                                                        //  Needs "Credentials Binding" plugin
+  }
+
+
   stages {
+    stage("init") {
+      steps {
+        script {
+          //  Running groovy scripts. Scripts must include return statement.
+          //  Importing script from external file.
+          //  Imported scripts will have access to global variables and parameters.
+          gv = load "script.groovy"
+        }
+      }
+    }
+
+
     stage("build") {
+      when {
+        expression {
+          env.BRANCH_NAME == 'dev' || env.CODE_CHANGES == true
+        }
+      }
       steps {
         echo 'Building the application...'
+        echo "Building version ${NEW_VERSION}"  //  Double quotes when using variables
+
+        //  Running imported script from external file:
+        script {
+          gv.buildApp()
+        }
+
       }
     }
 
     stage("test") {
+      when {
+        expression {
+          params.executeTests == true //  Using a parameter
+        }
+      }
+
       steps {
+
+
         echo 'Testing the application...'
       }
     }
@@ -17,7 +72,36 @@ pipeline {
     stage("deploy") {
       steps {
         echo 'Deploying the application...'
+        echo "Deploying with credentials: ${SERVER_CREDENTIALS}"
+        sh "${SERVER_CREDENTIALS}"  //  Passing credentials to shell script
+        echo "Deploying version ${params.VERSION}" //  Using a parameter
+
+
+        //  Using variables in a local scope (Wrapper syntax):
+        withCredentials([   //  Defining a groovy object:
+          usernamePassword(credentials: 'credentials-id', usernameVariable: USER, passwordVariable: PWD)
+        ]) {
+//           Within this code block variables USER and PWD are available
+        }
+
       }
     }
+
+    post {
+      always {
+      }
+
+      success {
+      }
+
+      failure {
+      }
+    }
+
   }
 }
+
+
+// All available env variables :
+// ===========================
+//  http://192.168.0.11:50001/env-vars.html/
