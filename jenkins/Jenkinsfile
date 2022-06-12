@@ -83,22 +83,20 @@ pipeline {
         ]) {
 //           Within this code block variables USER and PWD are available
         }
-
       }
     }
-
-    post {
-      always {
-      }
-
-      success {
-      }
-
-      failure {
-      }
-    }
-
   }
+
+  post {
+        always {
+        }
+
+        success {
+        }
+
+        failure {
+        }
+      }
 }
 
 
