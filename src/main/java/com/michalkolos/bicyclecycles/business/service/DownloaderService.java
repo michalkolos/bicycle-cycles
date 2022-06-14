@@ -39,6 +39,7 @@ public class DownloaderService {
 			return HttpRequest.newBuilder()
 					.uri(URI.create(urlString))
 					.GET()
+					.timeout(Duration.of(CONNECTION_TIMEOUT_SECONDS, ChronoUnit.SECONDS))
 					.build();
 
 		} catch (IllegalArgumentException | IllegalStateException e) {
