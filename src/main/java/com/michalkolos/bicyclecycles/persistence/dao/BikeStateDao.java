@@ -86,5 +86,7 @@ public class BikeStateDao {
 
 		return unsynced;
 	}
+
+//	public List<Set<BikeState>>
 }
 

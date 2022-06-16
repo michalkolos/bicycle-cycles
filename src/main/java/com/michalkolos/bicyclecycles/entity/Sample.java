@@ -30,7 +30,7 @@ public class Sample implements Comparable<Sample>{
 	@Column(name = "creation_duration")
 	private Duration creationDuration;
 
-	@ManyToMany(cascade = {CascadeType.ALL, CascadeType.ALL}, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = {CascadeType.ALL, CascadeType.ALL}, fetch = FetchType.LAZY)
 	@JoinTable(name = "sample_bike_states",
 			joinColumns = {@JoinColumn(name = "sample_id", referencedColumnName = "id")},
 			inverseJoinColumns = {@JoinColumn(name = "bike_state_id", referencedColumnName = "id")})
@@ -38,7 +38,7 @@ public class Sample implements Comparable<Sample>{
 	private Set<BikeState> bikeStates = new HashSet<>();
 
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "sample_owm_weather",
 			joinColumns = {@JoinColumn(name = "sample_id", referencedColumnName = "id")},
 			inverseJoinColumns = {@JoinColumn(name = "weather_id", referencedColumnName = "id")})

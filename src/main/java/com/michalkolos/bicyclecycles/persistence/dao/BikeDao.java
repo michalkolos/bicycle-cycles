@@ -15,5 +15,4 @@ public class BikeDao extends AbstractDao<Bike, BikeRepository>{
 	public BikeDao(BikeRepository repository) {
 		super(repository, "Bike");
 	}
-
 }

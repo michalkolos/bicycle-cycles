@@ -8,6 +8,9 @@ import com.michalkolos.bicyclecycles.entity.*;
 import com.michalkolos.bicyclecycles.persistence.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -37,13 +40,16 @@ public class SampleDao {
 		return new Sample();
 	}
 
+	@Transactional
 	public Optional<Sample> getPrevious() {
 		return sampleRepository.findFirstByOrderByTimestampDesc();
 	}
 
-
-	public void persistWeather(Sample sample) {
-		// TODO: Implement persisting weather data.
+	@Transactional
+	public List<Sample> getPrevious(int count){
+		Page<Sample> page = sampleRepository.findAll(
+				PageRequest.of(0, count, Sort.by(Sort.Order.desc("id"))));
+		return page.getContent();
 	}
 
 	@Transactional

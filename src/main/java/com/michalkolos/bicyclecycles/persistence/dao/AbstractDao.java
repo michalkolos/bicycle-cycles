@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,6 +34,20 @@ public abstract class AbstractDao<T, R extends JpaRepository<T, Long>> {
 	@Transactional
 	public List<T> getAll() {
 		return repository.findAll();
+	}
+
+	@Transactional
+	public Optional<T> getById(long id) {
+		Optional<T> returnedOptional = Optional.empty();
+
+		try{
+			returnedOptional = Optional.of(repository.getById(id));
+		} catch (EntityNotFoundException e) {
+			log.warn("Unable to find entity \"{}\" with id: {} in the database.",
+					entityName, id);
+		}
+
+		return returnedOptional;
 	}
 
 	private void fillOutEntityMap() {
