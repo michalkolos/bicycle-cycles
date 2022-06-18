@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Component
 public class PlaceDao extends AbstractDao<Place, PlaceRepository>{
@@ -33,5 +35,10 @@ public class PlaceDao extends AbstractDao<Place, PlaceRepository>{
 	public Place sync(Place notSynced) {
 		notSynced.setCity(cityDao.sync(notSynced.getCity()));
 		return super.sync(notSynced);
+	}
+
+	@Transactional
+	public List<Place> getCityPlaces(long cityId) {
+		return repository.findAllByCity_Id(cityId);
 	}
 }

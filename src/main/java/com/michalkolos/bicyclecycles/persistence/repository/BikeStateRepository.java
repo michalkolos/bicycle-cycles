@@ -14,5 +14,9 @@ import java.util.Set;
 
 @Repository
 public interface BikeStateRepository extends JpaRepository<BikeState, Long> {
-//	List<BikeState> findAllBySamplesContaining(Sample sample);
+//	List<BikeState> findAllBySampleAndPlace_Id(Sample sample, long placeId);
+//	List<BikeState> findAll();
+	List<BikeState> findByPlace_IdAndSamplesIn(long id, Set<Sample> sample);
+
+
 }

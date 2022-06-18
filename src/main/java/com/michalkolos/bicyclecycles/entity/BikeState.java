@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -44,9 +45,9 @@ public class BikeState {
 	@JoinColumn(name = "bike_id", nullable = false)
 	private Bike bike;
 
-//	@ManyToMany(mappedBy = "bikeStates")
-//	@ToString.Exclude
-//	private Set<Sample> samples;
+	@ManyToMany(targetEntity = Sample.class, mappedBy = "bikeStates")
+	@ToString.Exclude
+	private Set<Sample> samples = new HashSet<>();
 
 
 	public BikeState() {

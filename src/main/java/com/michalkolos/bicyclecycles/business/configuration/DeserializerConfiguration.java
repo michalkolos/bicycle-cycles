@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.michalkolos.bicyclecycles.business.service.nextbike.BikeDtoDeserializer;
 import com.michalkolos.bicyclecycles.business.service.nextbike.CityBoundsDeserializer;
 import com.michalkolos.bicyclecycles.business.service.nextbike.dto.BikeDto;
@@ -48,6 +49,7 @@ public class DeserializerConfiguration {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(module);
+		objectMapper.registerModule(new JavaTimeModule());
 
 		return objectMapper;
 	}

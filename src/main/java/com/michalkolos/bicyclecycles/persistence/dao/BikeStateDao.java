@@ -7,6 +7,7 @@ package com.michalkolos.bicyclecycles.persistence.dao;
 import com.michalkolos.bicyclecycles.entity.Bike;
 import com.michalkolos.bicyclecycles.entity.BikeState;
 import com.michalkolos.bicyclecycles.entity.Sample;
+import com.michalkolos.bicyclecycles.persistence.repository.BikeStateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,9 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+//  TODO: Make BikeStateDao extend AbstractDao;
 @Component
 @Slf4j
 @PersistenceContext(type = PersistenceContextType.EXTENDED)
@@ -24,13 +29,16 @@ public class BikeStateDao {
 
 	private final PlaceDao placeDao;
 	private final BikeDao bikeDao;
+	private final BikeStateRepository bikeStateRepository;
 
 	@Autowired
 	public BikeStateDao(PlaceDao placeDao,
-	                    BikeDao bikeDao) {
+	                    BikeDao bikeDao,
+	                    BikeStateRepository bikeStateRepository) {
 
 		this.placeDao = placeDao;
 		this.bikeDao = bikeDao;
+		this.bikeStateRepository = bikeStateRepository;
 	}
 
 
@@ -87,6 +95,20 @@ public class BikeStateDao {
 		return unsynced;
 	}
 
-//	public List<Set<BikeState>>
+
+	@Transactional
+	public List<BikeState> getBikeStatesAtPlaceForSample(long placeId, Sample sample) {
+		Instant startTime = Instant.now();
+
+		List<BikeState> bikeStates = bikeStateRepository
+				.findByPlace_IdAndSamplesIn(placeId, Set.of(sample));
+
+		Duration elapsedTime = Duration.between(startTime, Instant.now());
+		log.info("Fetched {} BikeStates from database in {}.{}s",
+				bikeStates.size(),
+				elapsedTime.toSecondsPart(),
+				elapsedTime.toNanosPart());
+		return bikeStates;
+	}
 }
 

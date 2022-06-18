@@ -27,6 +27,6 @@ public class Runner implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) {
 
-		dataIngest.run();
+//		dataIngest.run();
 	}
 }

@@ -4,6 +4,7 @@
 
 package com.michalkolos.bicyclecycles.entity;
 
+import com.michalkolos.bicyclecycles.persistence.dao.BikeStateDao;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
 
@@ -17,7 +18,7 @@ import java.util.*;
 @Setter
 @ToString
 @Log4j2
-public class Sample implements Comparable<Sample>{
+public class Sample implements Comparable<Sample> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,7 +31,9 @@ public class Sample implements Comparable<Sample>{
 	@Column(name = "creation_duration")
 	private Duration creationDuration;
 
-	@ManyToMany(cascade = {CascadeType.ALL, CascadeType.ALL}, fetch = FetchType.LAZY)
+	@ManyToMany(targetEntity = BikeState.class,
+			cascade = {CascadeType.ALL, CascadeType.ALL},
+			fetch = FetchType.LAZY)
 	@JoinTable(name = "sample_bike_states",
 			joinColumns = {@JoinColumn(name = "sample_id", referencedColumnName = "id")},
 			inverseJoinColumns = {@JoinColumn(name = "bike_state_id", referencedColumnName = "id")})
@@ -65,16 +68,12 @@ public class Sample implements Comparable<Sample>{
 		}
 
 		bikeStates.add(state);
-//		state.getSamples().add(this);
+		state.getSamples().add(this);
 	}
 
-	public void removeBikeState(BikeState state) {
-		if(!bikeStates.remove(state)) {
-			log.error("While removing BikeState from Sample, did not exist in Sample's set");
-		}
-//		if(!state.getSamples().remove(this)) {
-//			log.error("While removing BikeState from Sample, Sample did not exist in BikeState's set");
-//		}
+	public void setBikeStates(Set<BikeState> bikeStates) {
+		bikeStates.forEach(bikeState -> bikeState.getSamples().add(this));
+		this.bikeStates = bikeStates;
 	}
 
 	public void addWeather(OwmWeather owmWeather) {
